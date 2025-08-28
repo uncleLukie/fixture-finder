@@ -8,6 +8,11 @@ on:
 
 jobs:
   build-and-deploy:
+    # Add these two lines
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,8 +34,8 @@ jobs:
       
     - name: Build
       env:
+        VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
         VITE_API_FOOTBALL_KEY: ${{ secrets.VITE_API_FOOTBALL_KEY }}
-        VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
       run: npm run build
       
     - name: Setup Pages
