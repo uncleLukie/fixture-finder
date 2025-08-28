@@ -1,8 +1,8 @@
 import type { Match, Sport, ApiResponse } from '../types/sports';
 
-// Environment variables for API configuration
-const API_FOOTBALL_KEY = import.meta.env.VITE_API_FOOTBALL_KEY || 'demo-key';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api-football-v1.p.rapidapi.com/v3';
+// Environment variables for API configuration (for future use)
+// const API_FOOTBALL_KEY = import.meta.env.VITE_API_FOOTBALL_KEY || 'demo-key';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api-football-v1.p.rapidapi.com/v3';
 
 // Fallback mock data for when API is not available
 const mockMatches: Match[] = [
@@ -71,12 +71,8 @@ export const sports: Sport[] = [
 ];
 
 class SportsApiService {
-  private apiKey: string;
-  private baseUrl: string;
-
   constructor() {
-    this.apiKey = API_FOOTBALL_KEY;
-    this.baseUrl = API_BASE_URL;
+    // Initialize service with environment variables
   }
 
   async getMatches(_sport: string, competition?: string): Promise<ApiResponse<Match[]>> {
