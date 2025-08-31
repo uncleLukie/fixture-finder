@@ -6,9 +6,9 @@ const About: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">About Rugby Hub</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">About OzFootie</h1>
           <p className="text-lg text-gray-600">
-            Your go-to destination for live rugby and football updates
+            Oz Footy Central: Real-Time Hub for AFL, League, and Union Down Under
           </p>
         </div>
 
@@ -16,15 +16,15 @@ const About: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">🎯 What We Do</h2>
             <p className="text-gray-600 mb-4">
-              Rugby Hub provides real-time information about live rugby and football matches across all major 
+              OzFootie provides real-time information about live Australian football matches across all major 
               competitions. Stay updated with scores, schedules, and match details for your favorite teams.
             </p>
             <ul className="text-gray-600 space-y-2">
               <li>• Live match scores and updates</li>
               <li>• Upcoming match schedules</li>
-              <li>• Rugby Union & League coverage</li>
-              <li>• NFL & College Football</li>
-              <li>• Australian Football League</li>
+              <li>• AFL (Australian Rules Football)</li>
+              <li>• NRL (Rugby League)</li>
+              <li>• Rugby Union (Wallabies & Super Rugby)</li>
             </ul>
           </div>
 
@@ -60,11 +60,11 @@ const About: React.FC = () => {
             <div>
               <h3 className="font-medium text-gray-800 mb-2">Supported Sports</h3>
               <ul className="text-gray-600 space-y-1">
-                <li>🏈 NFL & College Football</li>
-                <li>🏉 Rugby Union</li>
-                <li>🏉 Rugby League</li>
-                <li>🏈 Australian Football (AFL)</li>
-                <li>🏈 Canadian Football (CFL)</li>
+                <li>🏈 AFL (Australian Rules Football)</li>
+                <li>🏉 NRL (Rugby League)</li>
+                <li>🏉 Rugby Union (Wallabies)</li>
+                <li>🏉 Super Rugby Pacific</li>
+                <li>🏉 Rugby Championship</li>
               </ul>
             </div>
             <div>

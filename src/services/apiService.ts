@@ -80,61 +80,12 @@ export const fetchAllUpcomingEvents = async (): Promise<SportEvent[]> => {
 // Generate mock data for demonstration when worker is not available
 function generateMockData(): SportEvent[] {
   const mockEvents: SportEvent[] = [];
-  const today = new Date();
   
-  // Define rugby and football focused sports data
+  // Define Australian football focused sports data (accurate as of September 2025)
   const sportsData = [
     {
-      sport: 'American Football',
-      leagues: ['NFL', 'NCAA Division I', 'CFL', 'XFL', 'USFL'],
-      teams: [
-        ['Kansas City Chiefs', 'Buffalo Bills'],
-        ['San Francisco 49ers', 'Dallas Cowboys'],
-        ['Philadelphia Eagles', 'Green Bay Packers'],
-        ['Miami Dolphins', 'New England Patriots'],
-        ['Alabama Crimson Tide', 'Georgia Bulldogs'],
-        ['Michigan Wolverines', 'Ohio State Buckeyes'],
-        ['Toronto Argonauts', 'Winnipeg Blue Bombers'],
-        ['Calgary Stampeders', 'Edmonton Elks']
-      ],
-      venues: ['Arrowhead Stadium', 'Highmark Stadium', 'Levi\'s Stadium', 'AT&T Stadium', 'Lincoln Financial Field', 'Lambeau Field', 'Hard Rock Stadium', 'Gillette Stadium'],
-      countries: ['United States', 'United States', 'United States', 'United States', 'United States', 'United States', 'Canada', 'Canada']
-    },
-    {
-      sport: 'Rugby Union',
-      leagues: ['Six Nations', 'Rugby Championship', 'Super Rugby', 'Heineken Champions Cup', 'Premiership Rugby', 'Top 14'],
-      teams: [
-        ['New Zealand All Blacks', 'South Africa Springboks'],
-        ['England', 'France'],
-        ['Australia Wallabies', 'Argentina Pumas'],
-        ['Ireland', 'Wales'],
-        ['Scotland', 'Italy'],
-        ['Crusaders', 'Blues'],
-        ['Leinster', 'Munster'],
-        ['Toulouse', 'La Rochelle']
-      ],
-      venues: ['Eden Park', 'Ellis Park', 'Twickenham Stadium', 'Stade de France', 'Suncorp Stadium', 'Estadio José Amalfitani', 'Aviva Stadium', 'Principality Stadium'],
-      countries: ['New Zealand', 'South Africa', 'United Kingdom', 'France', 'Australia', 'Argentina', 'Ireland', 'Wales']
-    },
-    {
-      sport: 'Rugby League',
-      leagues: ['NRL', 'Super League', 'State of Origin', 'Challenge Cup', 'World Cup'],
-      teams: [
-        ['Sydney Roosters', 'Melbourne Storm'],
-        ['Brisbane Broncos', 'Penrith Panthers'],
-        ['Leeds Rhinos', 'Wigan Warriors'],
-        ['St Helens', 'Warrington Wolves'],
-        ['Queensland Maroons', 'New South Wales Blues'],
-        ['Australia Kangaroos', 'England Lions'],
-        ['New Zealand Kiwis', 'Tonga'],
-        ['Fiji', 'Samoa']
-      ],
-      venues: ['Allianz Stadium', 'AAMI Park', 'Suncorp Stadium', 'Penrith Stadium', 'Elland Road', 'DW Stadium', 'Totally Wicked Stadium', 'Halliwell Jones Stadium'],
-      countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'United Kingdom', 'United Kingdom']
-    },
-    {
       sport: 'Australian Football',
-      leagues: ['AFL', 'AFLW', 'VFL', 'SANFL'],
+      leagues: ['AFL', 'AFL Finals'],
       teams: [
         ['Collingwood Magpies', 'Carlton Blues'],
         ['Essendon Bombers', 'Richmond Tigers'],
@@ -149,39 +100,84 @@ function generateMockData(): SportEvent[] {
       countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia']
     },
     {
-      sport: 'College Football',
-      leagues: ['SEC', 'Big Ten', 'ACC', 'Big 12', 'Pac-12', 'American Athletic'],
+      sport: 'Rugby League',
+      leagues: ['NRL', 'NRL Finals'],
       teams: [
-        ['Alabama Crimson Tide', 'Auburn Tigers'],
-        ['Michigan Wolverines', 'Ohio State Buckeyes'],
-        ['Clemson Tigers', 'Florida State Seminoles'],
-        ['Oklahoma Sooners', 'Texas Longhorns'],
-        ['USC Trojans', 'UCLA Bruins'],
-        ['Georgia Bulldogs', 'Florida Gators'],
-        ['LSU Tigers', 'Arkansas Razorbacks'],
-        ['Penn State Nittany Lions', 'Michigan State Spartans']
+        ['Sydney Roosters', 'Melbourne Storm'],
+        ['Brisbane Broncos', 'Penrith Panthers'],
+        ['Parramatta Eels', 'Cronulla Sharks'],
+        ['Manly Sea Eagles', 'South Sydney Rabbitohs'],
+        ['Newcastle Knights', 'Canberra Raiders'],
+        ['North Queensland Cowboys', 'Gold Coast Titans'],
+        ['St George Illawarra Dragons', 'Wests Tigers'],
+        ['Canterbury Bulldogs', 'New Zealand Warriors']
       ],
-      venues: ['Bryant-Denny Stadium', 'Jordan-Hare Stadium', 'Michigan Stadium', 'Ohio Stadium', 'Memorial Stadium', 'Doak Campbell Stadium', 'Cotton Bowl', 'Rose Bowl'],
-      countries: ['United States', 'United States', 'United States', 'United States', 'United States', 'United States', 'United States', 'United States']
+      venues: ['Allianz Stadium', 'AAMI Park', 'Suncorp Stadium', 'Penrith Stadium', 'McDonald Jones Stadium', 'Queensland Country Bank Stadium', 'Netstrata Jubilee Stadium', 'ANZ Stadium'],
+      countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia']
+    },
+    {
+      sport: 'Rugby Union',
+      leagues: ['Rugby Championship', 'Super Rugby Pacific'],
+      teams: [
+        ['New Zealand All Blacks', 'South Africa Springboks'],
+        ['Australia Wallabies', 'Argentina Pumas'],
+        ['Crusaders', 'Blues'],
+        ['Hurricanes', 'Chiefs'],
+        ['Highlanders', 'Moana Pasifika'],
+        ['Brumbies', 'Reds'],
+        ['Waratahs', 'Force'],
+        ['Rebels', 'Fijian Drua']
+      ],
+      venues: ['Eden Park', 'Ellis Park', 'Suncorp Stadium', 'Estadio José Amalfitani', 'Orangetheory Stadium', 'Eden Park', 'Forsyth Barr Stadium', 'Apia Park'],
+      countries: ['New Zealand', 'South Africa', 'Australia', 'Argentina', 'New Zealand', 'New Zealand', 'New Zealand', 'Samoa']
     }
   ];
   
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 40; i++) {
     const sportData = sportsData[i % sportsData.length];
     const league = sportData.leagues[i % sportData.leagues.length];
     const teams = sportData.teams[i % sportData.teams.length];
     const venue = sportData.venues[i % sportData.venues.length];
     const country = sportData.countries[i % sportData.countries.length];
     
-    // Generate random date within next 30 days
-    const randomDays = Math.floor(Math.random() * 30);
-    const eventDate = new Date(today);
-    eventDate.setDate(today.getDate() + randomDays);
+    // Generate realistic dates for September 2025 (AFL Finals, Rugby Championship)
+    let randomDays;
+    if (sportData.sport === 'Australian Football') {
+      // AFL Finals: Sep 5-7 (qualifying), Sep 12-13 (semis), Sep 19-20 (prelims), Sep 27 (Grand Final)
+      const aflFinalsDates = [5, 6, 7, 12, 13, 19, 20, 27];
+      randomDays = aflFinalsDates[i % aflFinalsDates.length];
+    } else if (sportData.sport === 'Rugby Union') {
+      // Rugby Championship: Sep 6, 13, 20, 27
+      const rugbyDates = [6, 13, 20, 27];
+      randomDays = rugbyDates[i % rugbyDates.length];
+    } else {
+      // NRL Finals: Sep 5-7, 12-13, 19-20, 26-27
+      const nrlDates = [5, 6, 7, 12, 13, 19, 20, 26, 27];
+      randomDays = nrlDates[i % nrlDates.length];
+    }
+    
+    const eventDate = new Date(2025, 8, randomDays); // September 2025
     const dateStr = eventDate.toISOString().slice(0, 10);
     
-    // Generate random time
-    const hours = Math.floor(Math.random() * 24);
-    const minutes = Math.floor(Math.random() * 60);
+    // Generate realistic kick-off times for Australian sports
+    let hours, minutes;
+    if (sportData.sport === 'Australian Football') {
+      // AFL: typically 7:20 PM, 7:50 PM, 3:20 PM for finals
+      const aflTimes = [19, 20, 15]; // 7 PM, 8 PM, 3 PM
+      hours = aflTimes[i % aflTimes.length];
+      minutes = 20;
+    } else if (sportData.sport === 'Rugby League') {
+      // NRL: typically 7:35 PM, 7:50 PM, 3:00 PM
+      const nrlTimes = [19, 20, 15]; // 7 PM, 8 PM, 3 PM
+      hours = nrlTimes[i % nrlTimes.length];
+      minutes = 35;
+    } else {
+      // Rugby Union: typically 7:30 PM, 8:00 PM
+      const rugbyTimes = [19, 20]; // 7 PM, 8 PM
+      hours = rugbyTimes[i % rugbyTimes.length];
+      minutes = 30;
+    }
+    
     const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
     
     const mockEvent: SportEvent = {
@@ -246,78 +242,43 @@ export const groupEventsBySport = (events: SportEvent[]): Record<string, SportEv
   }, {} as Record<string, SportEvent[]>);
 };
 
-// Helper function to get sport icon
+// Helper function to get sport icon - Australian focus
 export const getSportIcon = (sport: string): string => {
   const sportIcons: Record<string, string> = {
-    // Rugby & Football Sports
-    'American Football': '🏈',
+    // Australian Football Codes
+    'Australian Football': '🏈',
     'Rugby Union': '🏉',
     'Rugby League': '🏉',
-    'Australian Football': '🏈',
-    'College Football': '🏈',
-    'Canadian Football': '🏈',
-    
-    // Major Leagues
-    'NFL': '🏈',
-    'NCAA': '🏈',
-    'CFL': '🏈',
-    'XFL': '🏈',
-    'USFL': '🏈',
     'AFL': '🏈',
     'NRL': '🏉',
-    'Super League': '🏉',
     'Super Rugby': '🏉',
-    'Six Nations': '🏉',
+    'Super Rugby Pacific': '🏉',
+    
+    // Major Australian Leagues
+    'AFL Finals': '🏈',
+    'NRL Finals': '🏉',
     'Rugby Championship': '🏉',
-    'Heineken Champions Cup': '🏉',
-    'Premiership Rugby': '🏉',
-    'Top 14': '🏉',
     'State of Origin': '🏉',
-    'Challenge Cup': '🏉',
-    'World Cup': '🏉',
     
-    // College Conferences
-    'SEC': '🏈',
-    'Big Ten': '🏈',
-    'ACC': '🏈',
-    'Big 12': '🏈',
-    'Pac-12': '🏈',
-    'American Athletic': '🏈',
-    'Mountain West': '🏈',
-    'Conference USA': '🏈',
-    'MAC': '🏈',
-    'Sun Belt': '🏈',
+    // Australian Teams & Competitions
+    'Wallabies': '🏉',
+    'Kangaroos': '🏉',
+    'Queensland Maroons': '🏉',
+    'New South Wales Blues': '🏉',
     
-    // Australian Football
-    'AFLW': '🏈',
-    'VFL': '🏈',
-    'SANFL': '🏈',
-    
-    // Other Sports (fallback)
+    // Fallback Sports
     'Soccer': '⚽',
     'Football': '⚽',
     'Basketball': '🏀',
-    'Baseball': '⚾',
-    'Ice Hockey': '🏒',
     'Cricket': '🏏',
     'Tennis': '🎾',
     'Golf': '⛳',
-    'Volleyball': '🏐',
-    'Handball': '🤾',
     'Boxing': '🥊',
     'MMA': '🥊',
     'Formula 1': '🏎️',
-    'MotoGP': '🏍️',
     'Athletics': '🏃',
     'Swimming': '🏊',
     'Cycling': '🚴',
-    'Skiing': '⛷️',
-    'Snooker': '🎱',
-    'Darts': '🎯',
-    'Bowling': '🎳',
-    'Curling': '🥌',
-    'Lacrosse': '🥍',
-    'Water Polo': '🤽',
     'Surfing': '🏄',
     'Skateboarding': '🛹',
     'Climbing': '🧗',
