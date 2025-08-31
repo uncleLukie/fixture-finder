@@ -72,7 +72,7 @@ const Home: React.FC = () => {
         setError(null);
         
         // Fetch diverse sports data for better variety
-        const allEventsData = await fetchDiverseSportsData();
+        const allEventsData = await fetchMaximumVarietyData();
         setAllEvents(allEventsData);
       } catch (err) {
         setError('Failed to load fixtures. Please try again later.');
