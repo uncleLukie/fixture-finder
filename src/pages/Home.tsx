@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAllFixturesByDay, fetchUpcomingFixtures, groupEventsBySport, getSportIcon } from '../services/apiService';
+import { fetchAllUpcomingEvents, groupEventsBySport, getSportIcon } from '../services/apiService';
 import type { SportEvent, GroupedEvents } from '../types/sports';
-import { Calendar, Filter, Globe, Sun, Moon, Clock, Search } from 'lucide-react';
+import { Calendar, Filter, Globe, Clock, Search, ChevronDown, ChevronRight, MapPin } from 'lucide-react';
 
 const Home: React.FC = () => {
   // State for data
@@ -17,15 +17,9 @@ const Home: React.FC = () => {
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [timezone, setTimezone] = useState<string>('local');
-  const [showFilters, setShowFilters] = useState<boolean>(false);
-
-  // State for dark mode
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
+  const [showFilters, setShowFilters] = useState<boolean>(true);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [userRegion, setUserRegion] = useState<string>('');
 
   // Get available filter options
   const sports = [...new Set(allEvents.map(event => event.strSport))].sort();
@@ -35,10 +29,40 @@ const Home: React.FC = () => {
     ...allEvents.map(event => event.strAwayTeam)
   ].filter(Boolean))].sort();
 
-  // Get today's date
-  const getTodaysDate = (): string => {
-    return new Date().toISOString().slice(0, 10);
-  };
+
+
+  // Detect user region on component mount
+  useEffect(() => {
+    const detectRegion = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setUserRegion(data.country_code || 'US');
+      } catch (error) {
+        console.log('Could not detect region, defaulting to US');
+        setUserRegion('US');
+      }
+    };
+    detectRegion();
+  }, []);
+
+  // Auto-expand regional sports sections
+  useEffect(() => {
+    if (userRegion && Object.keys(filteredEvents).length > 0) {
+      const newExpanded = new Set(expandedSections);
+      
+      // Auto-expand regional sports
+      Object.entries(filteredEvents).forEach(([sport, events]) => {
+        const isRegional = getRegionalPriority(sport, events) === 1;
+        if (isRegional) {
+          newExpanded.add(`live-${sport}`);
+          newExpanded.add(`upcoming-${sport}`);
+        }
+      });
+      
+      setExpandedSections(newExpanded);
+    }
+  }, [userRegion, filteredEvents]);
 
   // Load data
   useEffect(() => {
@@ -47,17 +71,9 @@ const Home: React.FC = () => {
         setIsLoading(true);
         setError(null);
         
-        const today = getTodaysDate();
-        const todaysEvents = await fetchAllFixturesByDay(today);
-        const upcomingEvents = await fetchUpcomingFixtures(7);
-        
-        // Combine and deduplicate events
-        const allEventsData = [...todaysEvents, ...upcomingEvents];
-        const uniqueEvents = allEventsData.filter((event, index, self) => 
-          index === self.findIndex(e => e.idEvent === event.idEvent)
-        );
-        
-        setAllEvents(uniqueEvents);
+        // Fetch all upcoming events from the lazy worker
+        const allEventsData = await fetchAllUpcomingEvents();
+        setAllEvents(allEventsData);
       } catch (err) {
         setError('Failed to load fixtures. Please try again later.');
         console.error(err);
@@ -113,12 +129,15 @@ const Home: React.FC = () => {
 
   // Dark mode effect
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    if (typeof window !== 'undefined') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
-  }, [darkMode]);
+  }, []);
 
   // Format time based on timezone
   const formatTime = (timeString: string, dateString: string): string => {
@@ -152,6 +171,64 @@ const Home: React.FC = () => {
     return event.strStatus === 'Live' || event.strStatus === '1H' || event.strStatus === '2H';
   };
 
+  // Group events by league within each sport
+  const groupEventsByLeague = (events: SportEvent[]) => {
+    return events.reduce((acc, event) => {
+      const league = event.strLeague || 'Other';
+      if (!acc[league]) {
+        acc[league] = [];
+      }
+      acc[league].push(event);
+      return acc;
+    }, {} as Record<string, SportEvent[]>);
+  };
+
+  // Normalize sport names for display
+  const normalizeSportName = (sport: string): string => {
+    const sportMappings: Record<string, string> = {
+      'Australian Football': 'AFL',
+      'American Football': 'Football',
+      'Soccer': 'Football',
+    };
+    return sportMappings[sport] || sport;
+  };
+
+  // Get regional priority for sports
+  const getRegionalPriority = (_sport: string, events: SportEvent[]): number => {
+    const regionalKeywords = {
+      'AU': [
+        'australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league', 'australian football',
+        'melbourne', 'sydney', 'brisbane', 'perth', 'adelaide', 'gold coast', 'newcastle',
+        'cricket', 'tennis', 'golf', 'rugby', 'soccer', 'basketball', 'netball'
+      ],
+      'US': [
+        'nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college', 'american football', 'baseball',
+        'basketball', 'hockey', 'soccer', 'tennis', 'golf', 'nascar', 'formula 1',
+        'boxing', 'mma', 'ufc', 'wrestling', 'olympics'
+      ],
+      'GB': [
+        'premier league', 'championship', 'fa cup', 'carabao cup', 'soccer', 'football',
+        'rugby', 'cricket', 'tennis', 'golf', 'formula 1', 'boxing', 'olympics',
+        'manchester', 'liverpool', 'london', 'birmingham', 'leeds', 'newcastle'
+      ],
+      'CA': [
+        'nhl', 'cfl', 'mls', 'canadian', 'canadian football', 'hockey', 'basketball',
+        'baseball', 'soccer', 'tennis', 'golf', 'olympics', 'toronto', 'montreal',
+        'vancouver', 'calgary', 'edmonton', 'ottawa'
+      ],
+    };
+
+    const userRegionKeywords = regionalKeywords[userRegion as keyof typeof regionalKeywords] || [];
+    const hasRegionalEvents = events.some(event => 
+      userRegionKeywords.some(keyword => 
+        event.strLeague?.toLowerCase().includes(keyword) ||
+        event.strSport?.toLowerCase().includes(keyword)
+      )
+    );
+
+    return hasRegionalEvents ? 1 : 2;
+  };
+
   // Separate live and upcoming events
   const liveEvents = Object.entries(filteredEvents).reduce((acc, [sport, events]) => {
     const live = events.filter(isLiveEvent);
@@ -169,6 +246,27 @@ const Home: React.FC = () => {
     return acc;
   }, {} as GroupedEvents);
 
+  // Sort sports by regional priority
+  const sortSportsByPriority = (events: GroupedEvents) => {
+    return Object.entries(events).sort(([sportA, eventsA], [sportB, eventsB]) => {
+      const priorityA = getRegionalPriority(sportA, eventsA);
+      const priorityB = getRegionalPriority(sportB, eventsB);
+      if (priorityA !== priorityB) return priorityA - priorityB;
+      return sportA.localeCompare(sportB);
+    });
+  };
+
+  // Toggle section expansion
+  const toggleSection = (sectionId: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(sectionId)) {
+      newExpanded.delete(sectionId);
+    } else {
+      newExpanded.add(sectionId);
+    }
+    setExpandedSections(newExpanded);
+  };
+
   // Clear all filters
   const clearFilters = () => {
     setSelectedDate('');
@@ -176,6 +274,104 @@ const Home: React.FC = () => {
     setSelectedCountry('');
     setSelectedTeam('');
     setSearchQuery('');
+  };
+
+  // Get region name
+  const getRegionName = (code: string): string => {
+    const regions: Record<string, string> = {
+      'AU': 'Australia',
+      'US': 'United States',
+      'GB': 'United Kingdom',
+      'CA': 'Canada',
+      'NZ': 'New Zealand',
+      'IN': 'India',
+      'ZA': 'South Africa',
+      'PK': 'Pakistan',
+      'BD': 'Bangladesh',
+      'LK': 'Sri Lanka',
+      'AF': 'Afghanistan',
+      'IE': 'Ireland',
+      'SC': 'Scotland',
+      'WA': 'Wales',
+      'FR': 'France',
+      'DE': 'Germany',
+      'ES': 'Spain',
+      'IT': 'Italy',
+      'NL': 'Netherlands',
+      'BE': 'Belgium',
+      'PT': 'Portugal',
+      'SE': 'Sweden',
+      'NO': 'Norway',
+      'DK': 'Denmark',
+      'FI': 'Finland',
+      'CH': 'Switzerland',
+      'AT': 'Austria',
+      'PL': 'Poland',
+      'CZ': 'Czech Republic',
+      'HU': 'Hungary',
+      'RO': 'Romania',
+      'BG': 'Bulgaria',
+      'HR': 'Croatia',
+      'RS': 'Serbia',
+      'SI': 'Slovenia',
+      'SK': 'Slovakia',
+      'LT': 'Lithuania',
+      'LV': 'Latvia',
+      'EE': 'Estonia',
+      'GR': 'Greece',
+      'TR': 'Turkey',
+      'RU': 'Russia',
+      'UA': 'Ukraine',
+      'BY': 'Belarus',
+      'MD': 'Moldova',
+      'GE': 'Georgia',
+      'AM': 'Armenia',
+      'AZ': 'Azerbaijan',
+      'KZ': 'Kazakhstan',
+      'UZ': 'Uzbekistan',
+      'KG': 'Kyrgyzstan',
+      'TJ': 'Tajikistan',
+      'TM': 'Turkmenistan',
+      'MN': 'Mongolia',
+      'CN': 'China',
+      'JP': 'Japan',
+      'KR': 'South Korea',
+      'KP': 'North Korea',
+      'TW': 'Taiwan',
+      'HK': 'Hong Kong',
+      'MO': 'Macau',
+      'TH': 'Thailand',
+      'VN': 'Vietnam',
+      'LA': 'Laos',
+      'KH': 'Cambodia',
+      'MM': 'Myanmar',
+      'MY': 'Malaysia',
+      'SG': 'Singapore',
+      'ID': 'Indonesia',
+      'PH': 'Philippines',
+      'BN': 'Brunei',
+      'TL': 'East Timor',
+      'PG': 'Papua New Guinea',
+      'FJ': 'Fiji',
+      'VU': 'Vanuatu',
+      'NC': 'New Caledonia',
+      'PF': 'French Polynesia',
+      'WS': 'Samoa',
+      'TO': 'Tonga',
+      'KI': 'Kiribati',
+      'TV': 'Tuvalu',
+      'NR': 'Nauru',
+      'PW': 'Palau',
+      'MH': 'Marshall Islands',
+      'FM': 'Micronesia',
+      'CK': 'Cook Islands',
+      'NU': 'Niue',
+      'TK': 'Tokelau',
+      'AS': 'American Samoa',
+      'GU': 'Guam',
+      'MP': 'Northern Mariana Islands'
+    };
+    return regions[code] || code;
   };
 
   if (isLoading) {
@@ -217,34 +413,38 @@ const Home: React.FC = () => {
               <div className="text-3xl">⚽🏀🎾</div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Fixture Finder</h1>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Live sports updates & upcoming matches</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Live sports updates & upcoming matches
+                  {userRegion && (
+                    <span className="ml-2 inline-flex items-center text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                      <MapPin className="w-3 h-3 mr-1" />
+                      {getRegionName(userRegion)}
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* Dark mode toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {darkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-gray-600" />}
-              </button>
-
               {/* Filter toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                  showFilters 
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                }`}
                 title="Toggle filters"
               >
-                <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <Filter className="w-4 h-4" />
+                <span className="text-sm font-medium">Filters</span>
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">
@@ -261,7 +461,7 @@ const Home: React.FC = () => {
 
         {/* Filters */}
         {showFilters && (
-          <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Date Filter */}
               <div>
@@ -349,6 +549,7 @@ const Home: React.FC = () => {
                   <option value="Europe/London">London</option>
                   <option value="Europe/Paris">Paris</option>
                   <option value="Asia/Tokyo">Tokyo</option>
+                  <option value="Australia/Sydney">Sydney</option>
                 </select>
               </div>
             </div>
@@ -368,74 +569,100 @@ const Home: React.FC = () => {
         {/* Live Events Section */}
         {Object.keys(liveEvents).length > 0 && (
           <section className="mb-8">
-            <div className="flex items-center space-x-2 mb-6">
+            <div className="flex items-center space-x-2 mb-4">
               <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Live Events</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Live Events</h2>
               <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                 {Object.values(liveEvents).flat().length}
               </span>
             </div>
             
-            <div className="space-y-6">
-              {Object.entries(liveEvents).map(([sport, events]) => (
-                <div key={sport} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                      <span className="mr-3 text-2xl">{getSportIcon(sport)}</span>
-                      {sport}
-                      <span className="ml-3 text-sm font-normal text-gray-500 dark:text-gray-400">
-                        ({events.length} live)
-                      </span>
-                    </h3>
-                  </div>
-                  
-                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {events.map((event) => (
-                      <div key={event.idEvent} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white mb-1">
-                              {event.strEvent}
-                            </h4>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                              <p>{event.strLeague}</p>
-                              {event.strVenue && (
-                                <p>📍 {event.strVenue}</p>
-                              )}
-                              {event.strCity && (
-                                <p>🏙️ {event.strCity}</p>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="text-right ml-4">
-                            <div className="text-sm font-medium text-red-600 dark:text-red-400">
-                              LIVE
-                            </div>
-                            <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                              {formatTime(event.strTime, event.dateEvent)}
-                            </div>
-                            {event.intHomeScore !== null && event.intAwayScore !== null && (
-                              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {event.intHomeScore} - {event.intAwayScore}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+            <div className="space-y-4">
+              {sortSportsByPriority(liveEvents).map(([sport, events]) => {
+                const leagues = groupEventsByLeague(events);
+                const sectionId = `live-${sport}`;
+                const isExpanded = expandedSections.has(sectionId);
+                const totalEvents = events.length;
+                const isRegional = getRegionalPriority(sport, events) === 1;
+
+                return (
+                  <div key={sport} className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border ${
+                    isRegional ? 'border-blue-200 dark:border-blue-700' : 'border-gray-200 dark:border-gray-700'
+                  }`}>
+                    <button
+                      onClick={() => toggleSection(sectionId)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                                             <div className="flex items-center space-x-3">
+                         <span className="text-2xl">{getSportIcon(sport)}</span>
+                         <div className="text-left">
+                           <h3 className="font-semibold text-gray-900 dark:text-white">{normalizeSportName(sport)}</h3>
+                           <p className="text-sm text-gray-500 dark:text-gray-400">
+                             {totalEvents} live event{totalEvents !== 1 ? 's' : ''}
+                           </p>
+                         </div>
+                        {isRegional && (
+                          <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                            Regional
+                          </span>
+                        )}
                       </div>
-                    ))}
+                      {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                    </button>
+                    
+                    {isExpanded && (
+                      <div className="border-t border-gray-200 dark:border-gray-700">
+                        {Object.entries(leagues).map(([league, leagueEvents]) => (
+                          <div key={league} className="p-4">
+                            <h4 className="font-medium text-gray-900 dark:text-white mb-3">{league}</h4>
+                            <div className="space-y-2">
+                              {leagueEvents.slice(0, 5).map((event) => (
+                                <div key={event.idEvent} className="flex justify-between items-center py-2 px-3 bg-gray-50 dark:bg-gray-700 rounded">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900 dark:text-white text-sm">
+                                      {event.strEvent}
+                                    </div>
+                                    {event.strVenue && (
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        📍 {event.strVenue}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-sm font-medium text-red-600 dark:text-red-400">LIVE</div>
+                                    <div className="text-sm text-gray-900 dark:text-white">
+                                      {formatTime(event.strTime, event.dateEvent)}
+                                    </div>
+                                    {event.intHomeScore !== null && event.intAwayScore !== null && (
+                                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                                        {event.intHomeScore} - {event.intAwayScore}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              {leagueEvents.length > 5 && (
+                                <div className="text-center py-2 text-sm text-gray-500 dark:text-gray-400">
+                                  +{leagueEvents.length - 5} more events
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
 
         {/* Upcoming Events Section */}
         <section>
-          <div className="flex items-center space-x-2 mb-6">
-            <Calendar className="w-6 h-6 text-blue-500" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
+          <div className="flex items-center space-x-2 mb-4">
+            <Calendar className="w-5 h-5 text-blue-500" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
             <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
               {Object.values(upcomingEvents).flat().length}
             </span>
@@ -452,57 +679,80 @@ const Home: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {Object.entries(upcomingEvents).map(([sport, events]) => (
-                <div key={sport} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                      <span className="mr-3 text-2xl">{getSportIcon(sport)}</span>
-                      {sport}
-                      <span className="ml-3 text-sm font-normal text-gray-500 dark:text-gray-400">
-                        ({events.length} upcoming)
-                      </span>
-                    </h3>
-                  </div>
-                  
-                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {events.map((event) => (
-                      <div key={event.idEvent} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white mb-1">
-                              {event.strEvent}
-                            </h4>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                              <p>{event.strLeague}</p>
-                              {event.strVenue && (
-                                <p>📍 {event.strVenue}</p>
-                              )}
-                              {event.strCity && (
-                                <p>🏙️ {event.strCity}</p>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="text-right ml-4">
-                            <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                              {formatDate(event.dateEvent)}
-                            </div>
-                            <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                              {formatTime(event.strTime, event.dateEvent)}
-                            </div>
-                            {event.intHomeScore !== null && event.intAwayScore !== null && (
-                              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {event.intHomeScore} - {event.intAwayScore}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+            <div className="space-y-4">
+              {sortSportsByPriority(upcomingEvents).map(([sport, events]) => {
+                const leagues = groupEventsByLeague(events);
+                const sectionId = `upcoming-${sport}`;
+                const isExpanded = expandedSections.has(sectionId);
+                const totalEvents = events.length;
+                const isRegional = getRegionalPriority(sport, events) === 1;
+
+                return (
+                  <div key={sport} className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border ${
+                    isRegional ? 'border-blue-200 dark:border-blue-700' : 'border-gray-200 dark:border-gray-700'
+                  }`}>
+                    <button
+                      onClick={() => toggleSection(sectionId)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                                             <div className="flex items-center space-x-3">
+                         <span className="text-2xl">{getSportIcon(sport)}</span>
+                         <div className="text-left">
+                           <h3 className="font-semibold text-gray-900 dark:text-white">{normalizeSportName(sport)}</h3>
+                           <p className="text-sm text-gray-500 dark:text-gray-400">
+                             {totalEvents} upcoming event{totalEvents !== 1 ? 's' : ''}
+                           </p>
+                         </div>
+                        {isRegional && (
+                          <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                            Regional
+                          </span>
+                        )}
                       </div>
-                    ))}
+                      {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                    </button>
+                    
+                    {isExpanded && (
+                      <div className="border-t border-gray-200 dark:border-gray-700">
+                        {Object.entries(leagues).map(([league, leagueEvents]) => (
+                          <div key={league} className="p-4">
+                            <h4 className="font-medium text-gray-900 dark:text-white mb-3">{league}</h4>
+                            <div className="space-y-2">
+                              {leagueEvents.slice(0, 5).map((event) => (
+                                <div key={event.idEvent} className="flex justify-between items-center py-2 px-3 bg-gray-50 dark:bg-gray-700 rounded">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900 dark:text-white text-sm">
+                                      {event.strEvent}
+                                    </div>
+                                    {event.strVenue && (
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        📍 {event.strVenue}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                      {formatDate(event.dateEvent)}
+                                    </div>
+                                    <div className="text-sm text-gray-900 dark:text-white">
+                                      {formatTime(event.strTime, event.dateEvent)}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              {leagueEvents.length > 5 && (
+                                <div className="text-center py-2 text-sm text-gray-500 dark:text-gray-400">
+                                  +{leagueEvents.length - 5} more events
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
