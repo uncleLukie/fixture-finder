@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchMaximumVarietyData, groupEventsBySport, getSportIcon } from '../services/apiService';
+import { fetchAllUpcomingEvents, groupEventsBySport, getSportIcon } from '../services/apiService';
 import type { SportEvent, GroupedEvents } from '../types/sports';
 import { Calendar, Filter, Globe, Clock, Search, ChevronDown, ChevronRight, MapPin } from 'lucide-react';
 
@@ -71,8 +71,8 @@ const Home: React.FC = () => {
         setIsLoading(true);
         setError(null);
         
-        // Fetch diverse sports data for better variety
-        const allEventsData = await fetchMaximumVarietyData();
+        // Fetch all upcoming events from the lazy worker
+        const allEventsData = await fetchAllUpcomingEvents();
         setAllEvents(allEventsData);
       } catch (err) {
         setError('Failed to load fixtures. Please try again later.');
@@ -196,10 +196,26 @@ const Home: React.FC = () => {
   // Get regional priority for sports
   const getRegionalPriority = (_sport: string, events: SportEvent[]): number => {
     const regionalKeywords = {
-      'AU': ['australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league', 'australian football'],
-      'US': ['nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college', 'american football'],
-      'GB': ['premier league', 'championship', 'fa cup', 'carabao cup', 'soccer'],
-      'CA': ['nhl', 'cfl', 'mls', 'canadian', 'canadian football'],
+      'AU': [
+        'australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league', 'australian football',
+        'melbourne', 'sydney', 'brisbane', 'perth', 'adelaide', 'gold coast', 'newcastle',
+        'cricket', 'tennis', 'golf', 'rugby', 'soccer', 'basketball', 'netball'
+      ],
+      'US': [
+        'nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college', 'american football', 'baseball',
+        'basketball', 'hockey', 'soccer', 'tennis', 'golf', 'nascar', 'formula 1',
+        'boxing', 'mma', 'ufc', 'wrestling', 'olympics'
+      ],
+      'GB': [
+        'premier league', 'championship', 'fa cup', 'carabao cup', 'soccer', 'football',
+        'rugby', 'cricket', 'tennis', 'golf', 'formula 1', 'boxing', 'olympics',
+        'manchester', 'liverpool', 'london', 'birmingham', 'leeds', 'newcastle'
+      ],
+      'CA': [
+        'nhl', 'cfl', 'mls', 'canadian', 'canadian football', 'hockey', 'basketball',
+        'baseball', 'soccer', 'tennis', 'golf', 'olympics', 'toronto', 'montreal',
+        'vancouver', 'calgary', 'edmonton', 'ottawa'
+      ],
     };
 
     const userRegionKeywords = regionalKeywords[userRegion as keyof typeof regionalKeywords] || [];
@@ -267,6 +283,93 @@ const Home: React.FC = () => {
       'US': 'United States',
       'GB': 'United Kingdom',
       'CA': 'Canada',
+      'NZ': 'New Zealand',
+      'IN': 'India',
+      'ZA': 'South Africa',
+      'PK': 'Pakistan',
+      'BD': 'Bangladesh',
+      'LK': 'Sri Lanka',
+      'AF': 'Afghanistan',
+      'IE': 'Ireland',
+      'SC': 'Scotland',
+      'WA': 'Wales',
+      'FR': 'France',
+      'DE': 'Germany',
+      'ES': 'Spain',
+      'IT': 'Italy',
+      'NL': 'Netherlands',
+      'BE': 'Belgium',
+      'PT': 'Portugal',
+      'SE': 'Sweden',
+      'NO': 'Norway',
+      'DK': 'Denmark',
+      'FI': 'Finland',
+      'CH': 'Switzerland',
+      'AT': 'Austria',
+      'PL': 'Poland',
+      'CZ': 'Czech Republic',
+      'HU': 'Hungary',
+      'RO': 'Romania',
+      'BG': 'Bulgaria',
+      'HR': 'Croatia',
+      'RS': 'Serbia',
+      'SI': 'Slovenia',
+      'SK': 'Slovakia',
+      'LT': 'Lithuania',
+      'LV': 'Latvia',
+      'EE': 'Estonia',
+      'GR': 'Greece',
+      'TR': 'Turkey',
+      'RU': 'Russia',
+      'UA': 'Ukraine',
+      'BY': 'Belarus',
+      'MD': 'Moldova',
+      'GE': 'Georgia',
+      'AM': 'Armenia',
+      'AZ': 'Azerbaijan',
+      'KZ': 'Kazakhstan',
+      'UZ': 'Uzbekistan',
+      'KG': 'Kyrgyzstan',
+      'TJ': 'Tajikistan',
+      'TM': 'Turkmenistan',
+      'MN': 'Mongolia',
+      'CN': 'China',
+      'JP': 'Japan',
+      'KR': 'South Korea',
+      'KP': 'North Korea',
+      'TW': 'Taiwan',
+      'HK': 'Hong Kong',
+      'MO': 'Macau',
+      'TH': 'Thailand',
+      'VN': 'Vietnam',
+      'LA': 'Laos',
+      'KH': 'Cambodia',
+      'MM': 'Myanmar',
+      'MY': 'Malaysia',
+      'SG': 'Singapore',
+      'ID': 'Indonesia',
+      'PH': 'Philippines',
+      'BN': 'Brunei',
+      'TL': 'East Timor',
+      'PG': 'Papua New Guinea',
+      'FJ': 'Fiji',
+      'VU': 'Vanuatu',
+      'NC': 'New Caledonia',
+      'PF': 'French Polynesia',
+      'WS': 'Samoa',
+      'TO': 'Tonga',
+      'KI': 'Kiribati',
+      'TV': 'Tuvalu',
+      'NR': 'Nauru',
+      'PW': 'Palau',
+      'MH': 'Marshall Islands',
+      'FM': 'Micronesia',
+      'CK': 'Cook Islands',
+      'NU': 'Niue',
+      'TK': 'Tokelau',
+      'AS': 'American Samoa',
+      'GU': 'Guam',
+      'MP': 'Northern Mariana Islands'
     };
     return regions[code] || code;
   };
