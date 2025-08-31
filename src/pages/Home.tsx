@@ -17,6 +17,7 @@ const Home: React.FC = () => {
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [timezone, setTimezone] = useState<string>('local');
+  const [detectedTimezone, setDetectedTimezone] = useState<string>('');
   const [showFilters, setShowFilters] = useState<boolean>(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [userRegion, setUserRegion] = useState<string>('');
@@ -139,16 +140,27 @@ const Home: React.FC = () => {
     }
   }, []);
 
+  // Detect user timezone on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      setDetectedTimezone(detected);
+      console.log('Detected timezone:', detected);
+    }
+  }, []);
+
   // Format time based on timezone
   const formatTime = (timeString: string, dateString: string): string => {
     if (!timeString) return 'TBD';
     
     try {
       const dateTime = new Date(`${dateString}T${timeString}`);
-      return dateTime.toLocaleTimeString('en-US', {
+      const targetTimezone = timezone === 'local' ? detectedTimezone : timezone;
+      
+      return dateTime.toLocaleTimeString('en-AU', {
         hour: '2-digit',
         minute: '2-digit',
-        timeZone: timezone === 'local' ? undefined : timezone
+        timeZone: targetTimezone || undefined
       });
     } catch {
       return timeString.substring(0, 5);
@@ -183,38 +195,35 @@ const Home: React.FC = () => {
     }, {} as Record<string, SportEvent[]>);
   };
 
-  // Normalize sport names for display
+  // Normalize sport names for display - Australian focus
   const normalizeSportName = (sport: string): string => {
     const sportMappings: Record<string, string> = {
       'Australian Football': 'AFL',
-      'American Football': 'Football',
-      'Soccer': 'Football',
+      'Rugby Union': 'Rugby Union',
+      'Rugby League': 'Rugby League',
+      'AFL': 'AFL',
+      'NRL': 'NRL',
+      'Super Rugby': 'Super Rugby Pacific',
     };
     return sportMappings[sport] || sport;
   };
 
-  // Get regional priority for sports
+  // Get regional priority for sports - Australian focus
   const getRegionalPriority = (_sport: string, events: SportEvent[]): number => {
     const regionalKeywords = {
       'AU': [
-        'australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league', 'australian football',
+        'afl', 'nrl', 'super rugby', 'australian football', 'rugby union', 'rugby league',
         'melbourne', 'sydney', 'brisbane', 'perth', 'adelaide', 'gold coast', 'newcastle',
-        'cricket', 'tennis', 'golf', 'rugby', 'soccer', 'basketball', 'netball'
+        'queensland', 'new south wales', 'wallabies', 'kangaroos', 'state of origin',
+        'rugby championship', 'super rugby pacific', 'afl finals', 'nrl finals'
       ],
-      'US': [
-        'nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college', 'american football', 'baseball',
-        'basketball', 'hockey', 'soccer', 'tennis', 'golf', 'nascar', 'formula 1',
-        'boxing', 'mma', 'ufc', 'wrestling', 'olympics'
+      'NZ': [
+        'super rugby', 'rugby union', 'all blacks', 'rugby championship', 'mitre 10 cup',
+        'new zealand', 'auckland', 'wellington', 'christchurch', 'super rugby pacific'
       ],
-      'GB': [
-        'premier league', 'championship', 'fa cup', 'carabao cup', 'soccer', 'football',
-        'rugby', 'cricket', 'tennis', 'golf', 'formula 1', 'boxing', 'olympics',
-        'manchester', 'liverpool', 'london', 'birmingham', 'leeds', 'newcastle'
-      ],
-      'CA': [
-        'nhl', 'cfl', 'mls', 'canadian', 'canadian football', 'hockey', 'basketball',
-        'baseball', 'soccer', 'tennis', 'golf', 'olympics', 'toronto', 'montreal',
-        'vancouver', 'calgary', 'edmonton', 'ottawa'
+      'ZA': [
+        'super rugby', 'rugby union', 'springboks', 'rugby championship', 'currie cup',
+        'south africa', 'johannesburg', 'cape town', 'durban', 'super rugby pacific'
       ],
     };
 
@@ -410,11 +419,11 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
-              <div className="text-3xl">⚽🏀🎾</div>
+                             <div className="text-3xl">🏈🏉🏉</div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Fixture Finder</h1>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Live sports updates & upcoming matches
+                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">OzFootie</h1>
+                 <p className="text-gray-600 dark:text-gray-400 text-sm">
+                   Oz Footy Central: Real-Time Hub for AFL, League, and Union Down Under
                   {userRegion && (
                     <span className="ml-2 inline-flex items-center text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                       <MapPin className="w-3 h-3 mr-1" />
@@ -535,34 +544,40 @@ const Home: React.FC = () => {
                   <Clock className="inline w-4 h-4 mr-1" />
                   Timezone
                 </label>
-                <select
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="local">Local Time</option>
-                  <option value="UTC">UTC</option>
-                  <option value="America/New_York">Eastern Time</option>
-                  <option value="America/Chicago">Central Time</option>
-                  <option value="America/Denver">Mountain Time</option>
-                  <option value="America/Los_Angeles">Pacific Time</option>
-                  <option value="Europe/London">London</option>
-                  <option value="Europe/Paris">Paris</option>
-                  <option value="Asia/Tokyo">Tokyo</option>
-                  <option value="Australia/Sydney">Sydney</option>
-                </select>
+                                 <select
+                   value={timezone}
+                   onChange={(e) => setTimezone(e.target.value)}
+                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 >
+                   <option value="local">Local Time ({detectedTimezone})</option>
+                   <option value="Australia/Sydney">AEST (Brisbane/Sydney)</option>
+                   <option value="Australia/Adelaide">ACST (Adelaide)</option>
+                   <option value="Australia/Perth">AWST (Perth)</option>
+                   <option value="Australia/Darwin">ACST (Darwin)</option>
+                   <option value="Australia/Hobart">AEST (Hobart)</option>
+                   <option value="Pacific/Auckland">NZST (Auckland)</option>
+                   <option value="UTC">UTC</option>
+                   <option value="Europe/London">London</option>
+                   <option value="Europe/Paris">Paris</option>
+                   <option value="Asia/Tokyo">Tokyo</option>
+                   <option value="America/New_York">New York</option>
+                   <option value="America/Los_Angeles">Los Angeles</option>
+                 </select>
               </div>
             </div>
 
-            {/* Clear Filters Button */}
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={clearFilters}
-                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-              >
-                Clear All Filters
-              </button>
-            </div>
+                         {/* Clear Filters Button */}
+             <div className="mt-4 flex justify-between items-center">
+               <div className="text-xs text-gray-500 dark:text-gray-400">
+                 Times shown in {timezone === 'local' ? detectedTimezone : timezone} – Kick-off relative to your location
+               </div>
+               <button
+                 onClick={clearFilters}
+                 className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+               >
+                 Clear All Filters
+               </button>
+             </div>
           </div>
         )}
 

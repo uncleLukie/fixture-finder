@@ -80,140 +80,104 @@ export const fetchAllUpcomingEvents = async (): Promise<SportEvent[]> => {
 // Generate mock data for demonstration when worker is not available
 function generateMockData(): SportEvent[] {
   const mockEvents: SportEvent[] = [];
-  const today = new Date();
   
-  // Define diverse sports data
+  // Define Australian football focused sports data (accurate as of September 2025)
   const sportsData = [
     {
-      sport: 'Tennis',
-      leagues: ['Australian Open', 'Wimbledon', 'US Open', 'French Open', 'ATP Tour', 'WTA Tour'],
+      sport: 'Australian Football',
+      leagues: ['AFL', 'AFL Finals'],
       teams: [
-        ['Novak Djokovic', 'Carlos Alcaraz'],
-        ['Rafael Nadal', 'Daniil Medvedev'],
-        ['Iga Świątek', 'Aryna Sabalenka'],
-        ['Coco Gauff', 'Elena Rybakina'],
-        ['Jannik Sinner', 'Stefanos Tsitsipas'],
-        ['Ons Jabeur', 'Markéta Vondroušová']
+        ['Collingwood Magpies', 'Carlton Blues'],
+        ['Essendon Bombers', 'Richmond Tigers'],
+        ['Geelong Cats', 'Hawthorn Hawks'],
+        ['Sydney Swans', 'GWS Giants'],
+        ['Adelaide Crows', 'Port Adelaide Power'],
+        ['West Coast Eagles', 'Fremantle Dockers'],
+        ['Brisbane Lions', 'Gold Coast Suns'],
+        ['Melbourne Demons', 'Western Bulldogs']
       ],
-      venues: ['Rod Laver Arena', 'Centre Court', 'Arthur Ashe Stadium', 'Court Philippe-Chatrier', 'Indian Wells Tennis Garden'],
-      countries: ['Australia', 'United Kingdom', 'United States', 'France', 'United States']
-    },
-    {
-      sport: 'Cricket',
-      leagues: ['ICC World Cup', 'IPL', 'Ashes Series', 'Big Bash League', 'Caribbean Premier League'],
-      teams: [
-        ['Australia', 'England'],
-        ['India', 'Pakistan'],
-        ['New Zealand', 'South Africa'],
-        ['West Indies', 'Sri Lanka'],
-        ['Bangladesh', 'Afghanistan'],
-        ['Mumbai Indians', 'Chennai Super Kings']
-      ],
-      venues: ['Melbourne Cricket Ground', 'Lords Cricket Ground', 'Eden Gardens', 'Wankhede Stadium', 'The Gabba'],
-      countries: ['Australia', 'United Kingdom', 'India', 'India', 'Australia']
-    },
-    {
-      sport: 'Rugby Union',
-      leagues: ['Six Nations', 'Rugby Championship', 'Super Rugby', 'Heineken Champions Cup', 'Premiership Rugby'],
-      teams: [
-        ['New Zealand', 'South Africa'],
-        ['England', 'France'],
-        ['Australia', 'Argentina'],
-        ['Ireland', 'Wales'],
-        ['Scotland', 'Italy'],
-        ['Crusaders', 'Blues']
-      ],
-      venues: ['Twickenham Stadium', 'Stade de France', 'Eden Park', 'Murrayfield', 'Principality Stadium'],
-      countries: ['United Kingdom', 'France', 'New Zealand', 'United Kingdom', 'United Kingdom']
+      venues: ['MCG', 'Marvel Stadium', 'Adelaide Oval', 'Optus Stadium', 'Gabba', 'Metricon Stadium', 'GMHBA Stadium', 'University of Tasmania Stadium'],
+      countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia']
     },
     {
       sport: 'Rugby League',
-      leagues: ['NRL', 'Super League', 'State of Origin', 'World Cup', 'Challenge Cup'],
+      leagues: ['NRL', 'NRL Finals'],
       teams: [
         ['Sydney Roosters', 'Melbourne Storm'],
         ['Brisbane Broncos', 'Penrith Panthers'],
-        ['Leeds Rhinos', 'Wigan Warriors'],
-        ['St Helens', 'Warrington Wolves'],
-        ['Queensland', 'New South Wales'],
-        ['Australia', 'England']
+        ['Parramatta Eels', 'Cronulla Sharks'],
+        ['Manly Sea Eagles', 'South Sydney Rabbitohs'],
+        ['Newcastle Knights', 'Canberra Raiders'],
+        ['North Queensland Cowboys', 'Gold Coast Titans'],
+        ['St George Illawarra Dragons', 'Wests Tigers'],
+        ['Canterbury Bulldogs', 'New Zealand Warriors']
       ],
-      venues: ['ANZ Stadium', 'Suncorp Stadium', 'Old Trafford', 'Allianz Stadium', 'Elland Road'],
-      countries: ['Australia', 'Australia', 'United Kingdom', 'Australia', 'United Kingdom']
+      venues: ['Allianz Stadium', 'AAMI Park', 'Suncorp Stadium', 'Penrith Stadium', 'McDonald Jones Stadium', 'Queensland Country Bank Stadium', 'Netstrata Jubilee Stadium', 'ANZ Stadium'],
+      countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia']
     },
     {
-      sport: 'Basketball',
-      leagues: ['NBA', 'EuroLeague', 'NBL', 'CBA', 'Liga ACB'],
+      sport: 'Rugby Union',
+      leagues: ['Rugby Championship', 'Super Rugby Pacific'],
       teams: [
-        ['Los Angeles Lakers', 'Boston Celtics'],
-        ['Golden State Warriors', 'Miami Heat'],
-        ['Real Madrid', 'Barcelona'],
-        ['Sydney Kings', 'Melbourne United'],
-        ['CSKA Moscow', 'Fenerbahçe'],
-        ['Toronto Raptors', 'Dallas Mavericks']
+        ['New Zealand All Blacks', 'South Africa Springboks'],
+        ['Australia Wallabies', 'Argentina Pumas'],
+        ['Crusaders', 'Blues'],
+        ['Hurricanes', 'Chiefs'],
+        ['Highlanders', 'Moana Pasifika'],
+        ['Brumbies', 'Reds'],
+        ['Waratahs', 'Force'],
+        ['Rebels', 'Fijian Drua']
       ],
-      venues: ['Staples Center', 'TD Garden', 'Palau Blaugrana', 'Qudos Bank Arena', 'Megasport Arena'],
-      countries: ['United States', 'United States', 'Spain', 'Australia', 'Russia']
-    },
-    {
-      sport: 'Soccer',
-      leagues: ['Premier League', 'La Liga', 'Bundesliga', 'Serie A', 'A-League'],
-      teams: [
-        ['Manchester United', 'Liverpool'],
-        ['Real Madrid', 'Barcelona'],
-        ['Bayern Munich', 'Borussia Dortmund'],
-        ['Juventus', 'AC Milan'],
-        ['Sydney FC', 'Melbourne City'],
-        ['Arsenal', 'Chelsea']
-      ],
-      venues: ['Old Trafford', 'Camp Nou', 'Allianz Arena', 'San Siro', 'Allianz Stadium'],
-      countries: ['United Kingdom', 'Spain', 'Germany', 'Italy', 'Australia']
-    },
-    {
-      sport: 'American Football',
-      leagues: ['NFL', 'NCAA', 'CFL', 'European League of Football'],
-      teams: [
-        ['Green Bay Packers', 'Washington Commanders'],
-        ['Cincinnati Bengals', 'Jacksonville Jaguars'],
-        ['Detroit Lions', 'Chicago Bears'],
-        ['Tennessee Titans', 'Los Angeles Rams'],
-        ['Dallas Cowboys', 'New York Giants'],
-        ['Houston Texans', 'Tampa Bay Buccaneers']
-      ],
-      venues: ['Lambeau Field', 'Paycor Stadium', 'Ford Field', 'Nissan Stadium', 'AT&T Stadium', 'NRG Stadium'],
-      countries: ['United States', 'United States', 'United States', 'United States', 'United States', 'United States']
-    },
-    {
-      sport: 'Baseball',
-      leagues: ['MLB', 'Nippon Baseball League', 'Chinese Professional Baseball League'],
-      teams: [
-        ['Washington Nationals', 'Atlanta Braves'],
-        ['Hanshin Tigers', 'Yokohama DeNA BayStars'],
-        ['Tohoku Rakuten Golden Eagles', 'Saitama Seibu Lions'],
-        ['Tokyo Yakult Swallows', 'Chunichi Dragons'],
-        ['Yomiuri Giants', 'Hiroshima Toyo Carp'],
-        ['Rakuten Monkeys', 'Wei Chuan Dragons']
-      ],
-      venues: ['Nationals Park', 'Koshien Stadium', 'Rakuten Mobile Park Miyagi', 'Meiji Jingu Stadium', 'Tokyo Dome', 'Taoyuan International Baseball Stadium'],
-      countries: ['United States', 'Japan', 'Japan', 'Japan', 'Japan', 'Taiwan']
+      venues: ['Eden Park', 'Ellis Park', 'Suncorp Stadium', 'Estadio José Amalfitani', 'Orangetheory Stadium', 'Eden Park', 'Forsyth Barr Stadium', 'Apia Park'],
+      countries: ['New Zealand', 'South Africa', 'Australia', 'Argentina', 'New Zealand', 'New Zealand', 'New Zealand', 'Samoa']
     }
   ];
   
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 40; i++) {
     const sportData = sportsData[i % sportsData.length];
     const league = sportData.leagues[i % sportData.leagues.length];
     const teams = sportData.teams[i % sportData.teams.length];
     const venue = sportData.venues[i % sportData.venues.length];
     const country = sportData.countries[i % sportData.countries.length];
     
-    // Generate random date within next 30 days
-    const randomDays = Math.floor(Math.random() * 30);
-    const eventDate = new Date(today);
-    eventDate.setDate(today.getDate() + randomDays);
+    // Generate realistic dates for September 2025 (AFL Finals, Rugby Championship)
+    let randomDays;
+    if (sportData.sport === 'Australian Football') {
+      // AFL Finals: Sep 5-7 (qualifying), Sep 12-13 (semis), Sep 19-20 (prelims), Sep 27 (Grand Final)
+      const aflFinalsDates = [5, 6, 7, 12, 13, 19, 20, 27];
+      randomDays = aflFinalsDates[i % aflFinalsDates.length];
+    } else if (sportData.sport === 'Rugby Union') {
+      // Rugby Championship: Sep 6, 13, 20, 27
+      const rugbyDates = [6, 13, 20, 27];
+      randomDays = rugbyDates[i % rugbyDates.length];
+    } else {
+      // NRL Finals: Sep 5-7, 12-13, 19-20, 26-27
+      const nrlDates = [5, 6, 7, 12, 13, 19, 20, 26, 27];
+      randomDays = nrlDates[i % nrlDates.length];
+    }
+    
+    const eventDate = new Date(2025, 8, randomDays); // September 2025
     const dateStr = eventDate.toISOString().slice(0, 10);
     
-    // Generate random time
-    const hours = Math.floor(Math.random() * 24);
-    const minutes = Math.floor(Math.random() * 60);
+    // Generate realistic kick-off times for Australian sports
+    let hours, minutes;
+    if (sportData.sport === 'Australian Football') {
+      // AFL: typically 7:20 PM, 7:50 PM, 3:20 PM for finals
+      const aflTimes = [19, 20, 15]; // 7 PM, 8 PM, 3 PM
+      hours = aflTimes[i % aflTimes.length];
+      minutes = 20;
+    } else if (sportData.sport === 'Rugby League') {
+      // NRL: typically 7:35 PM, 7:50 PM, 3:00 PM
+      const nrlTimes = [19, 20, 15]; // 7 PM, 8 PM, 3 PM
+      hours = nrlTimes[i % nrlTimes.length];
+      minutes = 35;
+    } else {
+      // Rugby Union: typically 7:30 PM, 8:00 PM
+      const rugbyTimes = [19, 20]; // 7 PM, 8 PM
+      hours = rugbyTimes[i % rugbyTimes.length];
+      minutes = 30;
+    }
+    
     const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
     
     const mockEvent: SportEvent = {
@@ -278,120 +242,50 @@ export const groupEventsBySport = (events: SportEvent[]): Record<string, SportEv
   }, {} as Record<string, SportEvent[]>);
 };
 
-// Helper function to get sport icon
+// Helper function to get sport icon - Australian focus
 export const getSportIcon = (sport: string): string => {
   const sportIcons: Record<string, string> = {
-    // Major Sports
+    // Australian Football Codes
+    'Australian Football': '🏈',
+    'Rugby Union': '🏉',
+    'Rugby League': '🏉',
+    'AFL': '🏈',
+    'NRL': '🏉',
+    'Super Rugby': '🏉',
+    'Super Rugby Pacific': '🏉',
+    
+    // Major Australian Leagues
+    'AFL Finals': '🏈',
+    'NRL Finals': '🏉',
+    'Rugby Championship': '🏉',
+    'State of Origin': '🏉',
+    
+    // Australian Teams & Competitions
+    'Wallabies': '🏉',
+    'Kangaroos': '🏉',
+    'Queensland Maroons': '🏉',
+    'New South Wales Blues': '🏉',
+    
+    // Fallback Sports
     'Soccer': '⚽',
     'Football': '⚽',
     'Basketball': '🏀',
-    'Baseball': '⚾',
-    'American Football': '🏈',
-    'Australian Football': '🏈',
-    'Ice Hockey': '🏒',
-    'Rugby': '🏉',
-    'Rugby Union': '🏉',
-    'Rugby League': '🏉',
     'Cricket': '🏏',
     'Tennis': '🎾',
     'Golf': '⛳',
-    'Volleyball': '🏐',
-    'Handball': '🤾',
-    'Table Tennis': '🏓',
-    'Badminton': '🏸',
-    'Squash': '🏸',
-    
-    // Combat Sports
     'Boxing': '🥊',
     'MMA': '🥊',
-    'Fighting': '🥊',
-    'Wrestling': '🤼',
-    'Judo': '🥋',
-    'Karate': '🥋',
-    'Taekwondo': '🥋',
-    
-    // Motorsports
-    'Motorsport': '🏎️',
     'Formula 1': '🏎️',
-    'Formula E': '🏎️',
-    'MotoGP': '🏍️',
-    'NASCAR': '🏎️',
-    'IndyCar': '🏎️',
-    'Rally': '🏎️',
-    'Le Mans': '🏎️',
-    
-    // Athletics & Olympic Sports
     'Athletics': '🏃',
     'Swimming': '🏊',
-    'Gymnastics': '🤸',
-    'Diving': '🏊',
     'Cycling': '🚴',
-    'Rowing': '🚣',
-    'Sailing': '⛵',
-    'Skiing': '⛷️',
-    'Snowboarding': '🏂',
-    'Skating': '⛸️',
-    'Hockey': '🏒',
-    'Field Hockey': '🏑',
-    
-    // Other Sports
-    'Snooker': '🎱',
-    'Pool': '🎱',
-    'Darts': '🎯',
-    'Bowling': '🎳',
-    'Curling': '🥌',
-    'Lacrosse': '🥍',
-    'Water Polo': '🤽',
-    'Beach Volleyball': '🏐',
     'Surfing': '🏄',
     'Skateboarding': '🛹',
     'Climbing': '🧗',
     'Archery': '🏹',
     'Shooting': '🎯',
-    'Weightlifting': '🏋️',
-    'Powerlifting': '🏋️',
-    'CrossFit': '🏋️',
-    
-    // League Names (for specific leagues)
-    'NFL': '🏈',
-    'NBA': '🏀',
-    'MLB': '⚾',
-    'NHL': '🏒',
-    'AFL': '🏈',
-    'NRL': '🏉',
-    'Super Rugby': '🏉',
-    'Big Bash': '🏏',
-    'A-League': '⚽',
-    'Premier League': '⚽',
-    'La Liga': '⚽',
-    'Bundesliga': '⚽',
-    'Serie A': '⚽',
-    'Ligue 1': '⚽',
-    'Championship': '⚽',
-    'FA Cup': '⚽',
-    'Carabao Cup': '⚽',
-    'Champions League': '⚽',
-    'Europa League': '⚽',
-    'NCAA': '🏈',
-    'College Football': '🏈',
-    'College Basketball': '🏀',
-    'CFL': '🏈',
-    'MLS': '⚽',
-    'Canadian Football': '🏈',
-    'IPL': '🏏',
-    'ICC': '🏏',
-    'Ashes': '🏏',
-    'Wimbledon': '🎾',
-    'Australian Open': '🎾',
-    'US Open': '🎾',
-    'French Open': '🎾',
-    'ATP': '🎾',
-    'WTA': '🎾',
-    'Six Nations': '🏉',
-    'Rugby Championship': '🏉',
-    'Heineken Champions Cup': '🏉',
-    'Premiership Rugby': '🏉'
+    'Weightlifting': '🏋️'
   };
   
-  return sportIcons[sport] || '🏆';
+  return sportIcons[sport] || '🏈';
 };

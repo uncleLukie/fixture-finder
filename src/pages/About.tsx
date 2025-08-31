@@ -6,9 +6,9 @@ const About: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">About Fixture Finder</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">About OzFootie</h1>
           <p className="text-lg text-gray-600">
-            Your go-to destination for live sports updates and upcoming match schedules
+            Oz Footy Central: Real-Time Hub for AFL, League, and Union Down Under
           </p>
         </div>
 
@@ -16,14 +16,15 @@ const About: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">🎯 What We Do</h2>
             <p className="text-gray-600 mb-4">
-              Fixture Finder provides real-time information about live sports matches and upcoming fixtures 
-              across multiple sports and competitions. Stay updated with scores, schedules, and match details.
+              OzFootie provides real-time information about live Australian football matches across all major 
+              competitions. Stay updated with scores, schedules, and match details for your favorite teams.
             </p>
             <ul className="text-gray-600 space-y-2">
               <li>• Live match scores and updates</li>
               <li>• Upcoming match schedules</li>
-              <li>• Multiple sports coverage</li>
-              <li>• Real-time data refresh</li>
+              <li>• AFL (Australian Rules Football)</li>
+              <li>• NRL (Rugby League)</li>
+              <li>• Rugby Union (Wallabies & Super Rugby)</li>
             </ul>
           </div>
 
@@ -59,10 +60,11 @@ const About: React.FC = () => {
             <div>
               <h3 className="font-medium text-gray-800 mb-2">Supported Sports</h3>
               <ul className="text-gray-600 space-y-1">
-                <li>⚽ Football (Soccer)</li>
-                <li>🏀 Basketball</li>
-                <li>🎾 Tennis</li>
-                <li>🏏 Cricket</li>
+                <li>🏈 AFL (Australian Rules Football)</li>
+                <li>🏉 NRL (Rugby League)</li>
+                <li>🏉 Rugby Union (Wallabies)</li>
+                <li>🏉 Super Rugby Pacific</li>
+                <li>🏉 Rugby Championship</li>
               </ul>
             </div>
             <div>
