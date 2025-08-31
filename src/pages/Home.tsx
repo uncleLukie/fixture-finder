@@ -187,7 +187,10 @@ const Home: React.FC = () => {
   const normalizeSportName = (sport: string): string => {
     const sportMappings: Record<string, string> = {
       'Australian Football': 'AFL',
-      'American Football': 'Football',
+      'American Football': 'NFL',
+      'Rugby Union': 'Rugby Union',
+      'Rugby League': 'Rugby League',
+      'College Football': 'NCAA Football',
       'Soccer': 'Football',
     };
     return sportMappings[sport] || sport;
@@ -197,24 +200,29 @@ const Home: React.FC = () => {
   const getRegionalPriority = (_sport: string, events: SportEvent[]): number => {
     const regionalKeywords = {
       'AU': [
-        'australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league', 'australian football',
+        'afl', 'nrl', 'super rugby', 'australian football', 'rugby union', 'rugby league',
         'melbourne', 'sydney', 'brisbane', 'perth', 'adelaide', 'gold coast', 'newcastle',
-        'cricket', 'tennis', 'golf', 'rugby', 'soccer', 'basketball', 'netball'
+        'queensland', 'new south wales', 'wallabies', 'kangaroos'
       ],
       'US': [
-        'nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college', 'american football', 'baseball',
-        'basketball', 'hockey', 'soccer', 'tennis', 'golf', 'nascar', 'formula 1',
-        'boxing', 'mma', 'ufc', 'wrestling', 'olympics'
+        'nfl', 'ncaa', 'college football', 'american football', 'football',
+        'super bowl', 'playoffs', 'conference', 'division', 'bowl game'
       ],
       'GB': [
-        'premier league', 'championship', 'fa cup', 'carabao cup', 'soccer', 'football',
-        'rugby', 'cricket', 'tennis', 'golf', 'formula 1', 'boxing', 'olympics',
-        'manchester', 'liverpool', 'london', 'birmingham', 'leeds', 'newcastle'
+        'premiership rugby', 'six nations', 'rugby union', 'rugby league', 'super league',
+        'championship', 'challenge cup', 'england', 'wales', 'scotland', 'ireland',
+        'british lions', 'rugby world cup'
       ],
       'CA': [
-        'nhl', 'cfl', 'mls', 'canadian', 'canadian football', 'hockey', 'basketball',
-        'baseball', 'soccer', 'tennis', 'golf', 'olympics', 'toronto', 'montreal',
-        'vancouver', 'calgary', 'edmonton', 'ottawa'
+        'cfl', 'canadian football', 'rugby', 'football', 'grey cup'
+      ],
+      'NZ': [
+        'super rugby', 'rugby union', 'all blacks', 'rugby championship', 'mitre 10 cup',
+        'new zealand', 'auckland', 'wellington', 'christchurch'
+      ],
+      'ZA': [
+        'super rugby', 'rugby union', 'springboks', 'rugby championship', 'currie cup',
+        'south africa', 'johannesburg', 'cape town', 'durban'
       ],
     };
 
@@ -410,11 +418,11 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
-              <div className="text-3xl">⚽🏀🎾</div>
+                             <div className="text-3xl">🏈🏉</div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Fixture Finder</h1>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Live sports updates & upcoming matches
+                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Rugby Hub</h1>
+                 <p className="text-gray-600 dark:text-gray-400 text-sm">
+                   Live rugby & football updates
                   {userRegion && (
                     <span className="ml-2 inline-flex items-center text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                       <MapPin className="w-3 h-3 mr-1" />

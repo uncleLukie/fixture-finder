@@ -82,119 +82,87 @@ function generateMockData(): SportEvent[] {
   const mockEvents: SportEvent[] = [];
   const today = new Date();
   
-  // Define diverse sports data
+  // Define rugby and football focused sports data
   const sportsData = [
     {
-      sport: 'Tennis',
-      leagues: ['Australian Open', 'Wimbledon', 'US Open', 'French Open', 'ATP Tour', 'WTA Tour'],
+      sport: 'American Football',
+      leagues: ['NFL', 'NCAA Division I', 'CFL', 'XFL', 'USFL'],
       teams: [
-        ['Novak Djokovic', 'Carlos Alcaraz'],
-        ['Rafael Nadal', 'Daniil Medvedev'],
-        ['Iga Świątek', 'Aryna Sabalenka'],
-        ['Coco Gauff', 'Elena Rybakina'],
-        ['Jannik Sinner', 'Stefanos Tsitsipas'],
-        ['Ons Jabeur', 'Markéta Vondroušová']
+        ['Kansas City Chiefs', 'Buffalo Bills'],
+        ['San Francisco 49ers', 'Dallas Cowboys'],
+        ['Philadelphia Eagles', 'Green Bay Packers'],
+        ['Miami Dolphins', 'New England Patriots'],
+        ['Alabama Crimson Tide', 'Georgia Bulldogs'],
+        ['Michigan Wolverines', 'Ohio State Buckeyes'],
+        ['Toronto Argonauts', 'Winnipeg Blue Bombers'],
+        ['Calgary Stampeders', 'Edmonton Elks']
       ],
-      venues: ['Rod Laver Arena', 'Centre Court', 'Arthur Ashe Stadium', 'Court Philippe-Chatrier', 'Indian Wells Tennis Garden'],
-      countries: ['Australia', 'United Kingdom', 'United States', 'France', 'United States']
-    },
-    {
-      sport: 'Cricket',
-      leagues: ['ICC World Cup', 'IPL', 'Ashes Series', 'Big Bash League', 'Caribbean Premier League'],
-      teams: [
-        ['Australia', 'England'],
-        ['India', 'Pakistan'],
-        ['New Zealand', 'South Africa'],
-        ['West Indies', 'Sri Lanka'],
-        ['Bangladesh', 'Afghanistan'],
-        ['Mumbai Indians', 'Chennai Super Kings']
-      ],
-      venues: ['Melbourne Cricket Ground', 'Lords Cricket Ground', 'Eden Gardens', 'Wankhede Stadium', 'The Gabba'],
-      countries: ['Australia', 'United Kingdom', 'India', 'India', 'Australia']
+      venues: ['Arrowhead Stadium', 'Highmark Stadium', 'Levi\'s Stadium', 'AT&T Stadium', 'Lincoln Financial Field', 'Lambeau Field', 'Hard Rock Stadium', 'Gillette Stadium'],
+      countries: ['United States', 'United States', 'United States', 'United States', 'United States', 'United States', 'Canada', 'Canada']
     },
     {
       sport: 'Rugby Union',
-      leagues: ['Six Nations', 'Rugby Championship', 'Super Rugby', 'Heineken Champions Cup', 'Premiership Rugby'],
+      leagues: ['Six Nations', 'Rugby Championship', 'Super Rugby', 'Heineken Champions Cup', 'Premiership Rugby', 'Top 14'],
       teams: [
-        ['New Zealand', 'South Africa'],
+        ['New Zealand All Blacks', 'South Africa Springboks'],
         ['England', 'France'],
-        ['Australia', 'Argentina'],
+        ['Australia Wallabies', 'Argentina Pumas'],
         ['Ireland', 'Wales'],
         ['Scotland', 'Italy'],
-        ['Crusaders', 'Blues']
+        ['Crusaders', 'Blues'],
+        ['Leinster', 'Munster'],
+        ['Toulouse', 'La Rochelle']
       ],
-      venues: ['Twickenham Stadium', 'Stade de France', 'Eden Park', 'Murrayfield', 'Principality Stadium'],
-      countries: ['United Kingdom', 'France', 'New Zealand', 'United Kingdom', 'United Kingdom']
+      venues: ['Eden Park', 'Ellis Park', 'Twickenham Stadium', 'Stade de France', 'Suncorp Stadium', 'Estadio José Amalfitani', 'Aviva Stadium', 'Principality Stadium'],
+      countries: ['New Zealand', 'South Africa', 'United Kingdom', 'France', 'Australia', 'Argentina', 'Ireland', 'Wales']
     },
     {
       sport: 'Rugby League',
-      leagues: ['NRL', 'Super League', 'State of Origin', 'World Cup', 'Challenge Cup'],
+      leagues: ['NRL', 'Super League', 'State of Origin', 'Challenge Cup', 'World Cup'],
       teams: [
         ['Sydney Roosters', 'Melbourne Storm'],
         ['Brisbane Broncos', 'Penrith Panthers'],
         ['Leeds Rhinos', 'Wigan Warriors'],
         ['St Helens', 'Warrington Wolves'],
-        ['Queensland', 'New South Wales'],
-        ['Australia', 'England']
+        ['Queensland Maroons', 'New South Wales Blues'],
+        ['Australia Kangaroos', 'England Lions'],
+        ['New Zealand Kiwis', 'Tonga'],
+        ['Fiji', 'Samoa']
       ],
-      venues: ['ANZ Stadium', 'Suncorp Stadium', 'Old Trafford', 'Allianz Stadium', 'Elland Road'],
-      countries: ['Australia', 'Australia', 'United Kingdom', 'Australia', 'United Kingdom']
+      venues: ['Allianz Stadium', 'AAMI Park', 'Suncorp Stadium', 'Penrith Stadium', 'Elland Road', 'DW Stadium', 'Totally Wicked Stadium', 'Halliwell Jones Stadium'],
+      countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'United Kingdom', 'United Kingdom']
     },
     {
-      sport: 'Basketball',
-      leagues: ['NBA', 'EuroLeague', 'NBL', 'CBA', 'Liga ACB'],
+      sport: 'Australian Football',
+      leagues: ['AFL', 'AFLW', 'VFL', 'SANFL'],
       teams: [
-        ['Los Angeles Lakers', 'Boston Celtics'],
-        ['Golden State Warriors', 'Miami Heat'],
-        ['Real Madrid', 'Barcelona'],
-        ['Sydney Kings', 'Melbourne United'],
-        ['CSKA Moscow', 'Fenerbahçe'],
-        ['Toronto Raptors', 'Dallas Mavericks']
+        ['Collingwood Magpies', 'Carlton Blues'],
+        ['Essendon Bombers', 'Richmond Tigers'],
+        ['Geelong Cats', 'Hawthorn Hawks'],
+        ['Sydney Swans', 'GWS Giants'],
+        ['Adelaide Crows', 'Port Adelaide Power'],
+        ['West Coast Eagles', 'Fremantle Dockers'],
+        ['Brisbane Lions', 'Gold Coast Suns'],
+        ['Melbourne Demons', 'Western Bulldogs']
       ],
-      venues: ['Staples Center', 'TD Garden', 'Palau Blaugrana', 'Qudos Bank Arena', 'Megasport Arena'],
-      countries: ['United States', 'United States', 'Spain', 'Australia', 'Russia']
+      venues: ['MCG', 'Marvel Stadium', 'Adelaide Oval', 'Optus Stadium', 'Gabba', 'Metricon Stadium', 'GMHBA Stadium', 'University of Tasmania Stadium'],
+      countries: ['Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia', 'Australia']
     },
     {
-      sport: 'Soccer',
-      leagues: ['Premier League', 'La Liga', 'Bundesliga', 'Serie A', 'A-League'],
+      sport: 'College Football',
+      leagues: ['SEC', 'Big Ten', 'ACC', 'Big 12', 'Pac-12', 'American Athletic'],
       teams: [
-        ['Manchester United', 'Liverpool'],
-        ['Real Madrid', 'Barcelona'],
-        ['Bayern Munich', 'Borussia Dortmund'],
-        ['Juventus', 'AC Milan'],
-        ['Sydney FC', 'Melbourne City'],
-        ['Arsenal', 'Chelsea']
+        ['Alabama Crimson Tide', 'Auburn Tigers'],
+        ['Michigan Wolverines', 'Ohio State Buckeyes'],
+        ['Clemson Tigers', 'Florida State Seminoles'],
+        ['Oklahoma Sooners', 'Texas Longhorns'],
+        ['USC Trojans', 'UCLA Bruins'],
+        ['Georgia Bulldogs', 'Florida Gators'],
+        ['LSU Tigers', 'Arkansas Razorbacks'],
+        ['Penn State Nittany Lions', 'Michigan State Spartans']
       ],
-      venues: ['Old Trafford', 'Camp Nou', 'Allianz Arena', 'San Siro', 'Allianz Stadium'],
-      countries: ['United Kingdom', 'Spain', 'Germany', 'Italy', 'Australia']
-    },
-    {
-      sport: 'American Football',
-      leagues: ['NFL', 'NCAA', 'CFL', 'European League of Football'],
-      teams: [
-        ['Green Bay Packers', 'Washington Commanders'],
-        ['Cincinnati Bengals', 'Jacksonville Jaguars'],
-        ['Detroit Lions', 'Chicago Bears'],
-        ['Tennessee Titans', 'Los Angeles Rams'],
-        ['Dallas Cowboys', 'New York Giants'],
-        ['Houston Texans', 'Tampa Bay Buccaneers']
-      ],
-      venues: ['Lambeau Field', 'Paycor Stadium', 'Ford Field', 'Nissan Stadium', 'AT&T Stadium', 'NRG Stadium'],
-      countries: ['United States', 'United States', 'United States', 'United States', 'United States', 'United States']
-    },
-    {
-      sport: 'Baseball',
-      leagues: ['MLB', 'Nippon Baseball League', 'Chinese Professional Baseball League'],
-      teams: [
-        ['Washington Nationals', 'Atlanta Braves'],
-        ['Hanshin Tigers', 'Yokohama DeNA BayStars'],
-        ['Tohoku Rakuten Golden Eagles', 'Saitama Seibu Lions'],
-        ['Tokyo Yakult Swallows', 'Chunichi Dragons'],
-        ['Yomiuri Giants', 'Hiroshima Toyo Carp'],
-        ['Rakuten Monkeys', 'Wei Chuan Dragons']
-      ],
-      venues: ['Nationals Park', 'Koshien Stadium', 'Rakuten Mobile Park Miyagi', 'Meiji Jingu Stadium', 'Tokyo Dome', 'Taoyuan International Baseball Stadium'],
-      countries: ['United States', 'Japan', 'Japan', 'Japan', 'Japan', 'Taiwan']
+      venues: ['Bryant-Denny Stadium', 'Jordan-Hare Stadium', 'Michigan Stadium', 'Ohio Stadium', 'Memorial Stadium', 'Doak Campbell Stadium', 'Cotton Bowl', 'Rose Bowl'],
+      countries: ['United States', 'United States', 'United States', 'United States', 'United States', 'United States', 'United States', 'United States']
     }
   ];
   
@@ -281,117 +249,82 @@ export const groupEventsBySport = (events: SportEvent[]): Record<string, SportEv
 // Helper function to get sport icon
 export const getSportIcon = (sport: string): string => {
   const sportIcons: Record<string, string> = {
-    // Major Sports
+    // Rugby & Football Sports
+    'American Football': '🏈',
+    'Rugby Union': '🏉',
+    'Rugby League': '🏉',
+    'Australian Football': '🏈',
+    'College Football': '🏈',
+    'Canadian Football': '🏈',
+    
+    // Major Leagues
+    'NFL': '🏈',
+    'NCAA': '🏈',
+    'CFL': '🏈',
+    'XFL': '🏈',
+    'USFL': '🏈',
+    'AFL': '🏈',
+    'NRL': '🏉',
+    'Super League': '🏉',
+    'Super Rugby': '🏉',
+    'Six Nations': '🏉',
+    'Rugby Championship': '🏉',
+    'Heineken Champions Cup': '🏉',
+    'Premiership Rugby': '🏉',
+    'Top 14': '🏉',
+    'State of Origin': '🏉',
+    'Challenge Cup': '🏉',
+    'World Cup': '🏉',
+    
+    // College Conferences
+    'SEC': '🏈',
+    'Big Ten': '🏈',
+    'ACC': '🏈',
+    'Big 12': '🏈',
+    'Pac-12': '🏈',
+    'American Athletic': '🏈',
+    'Mountain West': '🏈',
+    'Conference USA': '🏈',
+    'MAC': '🏈',
+    'Sun Belt': '🏈',
+    
+    // Australian Football
+    'AFLW': '🏈',
+    'VFL': '🏈',
+    'SANFL': '🏈',
+    
+    // Other Sports (fallback)
     'Soccer': '⚽',
     'Football': '⚽',
     'Basketball': '🏀',
     'Baseball': '⚾',
-    'American Football': '🏈',
-    'Australian Football': '🏈',
     'Ice Hockey': '🏒',
-    'Rugby': '🏉',
-    'Rugby Union': '🏉',
-    'Rugby League': '🏉',
     'Cricket': '🏏',
     'Tennis': '🎾',
     'Golf': '⛳',
     'Volleyball': '🏐',
     'Handball': '🤾',
-    'Table Tennis': '🏓',
-    'Badminton': '🏸',
-    'Squash': '🏸',
-    
-    // Combat Sports
     'Boxing': '🥊',
     'MMA': '🥊',
-    'Fighting': '🥊',
-    'Wrestling': '🤼',
-    'Judo': '🥋',
-    'Karate': '🥋',
-    'Taekwondo': '🥋',
-    
-    // Motorsports
-    'Motorsport': '🏎️',
     'Formula 1': '🏎️',
-    'Formula E': '🏎️',
     'MotoGP': '🏍️',
-    'NASCAR': '🏎️',
-    'IndyCar': '🏎️',
-    'Rally': '🏎️',
-    'Le Mans': '🏎️',
-    
-    // Athletics & Olympic Sports
     'Athletics': '🏃',
     'Swimming': '🏊',
-    'Gymnastics': '🤸',
-    'Diving': '🏊',
     'Cycling': '🚴',
-    'Rowing': '🚣',
-    'Sailing': '⛵',
     'Skiing': '⛷️',
-    'Snowboarding': '🏂',
-    'Skating': '⛸️',
-    'Hockey': '🏒',
-    'Field Hockey': '🏑',
-    
-    // Other Sports
     'Snooker': '🎱',
-    'Pool': '🎱',
     'Darts': '🎯',
     'Bowling': '🎳',
     'Curling': '🥌',
     'Lacrosse': '🥍',
     'Water Polo': '🤽',
-    'Beach Volleyball': '🏐',
     'Surfing': '🏄',
     'Skateboarding': '🛹',
     'Climbing': '🧗',
     'Archery': '🏹',
     'Shooting': '🎯',
-    'Weightlifting': '🏋️',
-    'Powerlifting': '🏋️',
-    'CrossFit': '🏋️',
-    
-    // League Names (for specific leagues)
-    'NFL': '🏈',
-    'NBA': '🏀',
-    'MLB': '⚾',
-    'NHL': '🏒',
-    'AFL': '🏈',
-    'NRL': '🏉',
-    'Super Rugby': '🏉',
-    'Big Bash': '🏏',
-    'A-League': '⚽',
-    'Premier League': '⚽',
-    'La Liga': '⚽',
-    'Bundesliga': '⚽',
-    'Serie A': '⚽',
-    'Ligue 1': '⚽',
-    'Championship': '⚽',
-    'FA Cup': '⚽',
-    'Carabao Cup': '⚽',
-    'Champions League': '⚽',
-    'Europa League': '⚽',
-    'NCAA': '🏈',
-    'College Football': '🏈',
-    'College Basketball': '🏀',
-    'CFL': '🏈',
-    'MLS': '⚽',
-    'Canadian Football': '🏈',
-    'IPL': '🏏',
-    'ICC': '🏏',
-    'Ashes': '🏏',
-    'Wimbledon': '🎾',
-    'Australian Open': '🎾',
-    'US Open': '🎾',
-    'French Open': '🎾',
-    'ATP': '🎾',
-    'WTA': '🎾',
-    'Six Nations': '🏉',
-    'Rugby Championship': '🏉',
-    'Heineken Champions Cup': '🏉',
-    'Premiership Rugby': '🏉'
+    'Weightlifting': '🏋️'
   };
   
-  return sportIcons[sport] || '🏆';
+  return sportIcons[sport] || '🏈';
 };
