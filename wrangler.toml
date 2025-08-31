@@ -1,0 +1,13 @@
+name = "fixture-finder"
+compatibility_date = "2025-08-31"
+
+[build]
+command = "npm run build"
+
+[site]
+bucket = "./dist"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchDiverseSportsData, groupEventsBySport, getSportIcon } from '../services/apiService';
+import { fetchMaximumVarietyData, groupEventsBySport, getSportIcon } from '../services/apiService';
 import type { SportEvent, GroupedEvents } from '../types/sports';
 import { Calendar, Filter, Globe, Clock, Search, ChevronDown, ChevronRight, MapPin } from 'lucide-react';
 
