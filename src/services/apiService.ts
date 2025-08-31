@@ -52,6 +52,30 @@ export const fetchUpcomingFixtures = async (days: number = 7): Promise<SportEven
   }
 };
 
+// Function to fetch diverse sports data for better variety
+export const fetchDiverseSportsData = async (variety: 'default' | 'max' = 'default'): Promise<SportEvent[]> => {
+  try {
+    // Use the worker's variety parameter for efficiency
+    const response = await fetch(`${WORKER_URL}?variety=${variety}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // The API returns an object like { events: [...], meta: {...} }
+    return data.events || [];
+  } catch (error) {
+    console.error("Failed to fetch diverse sports data:", error);
+    throw error;
+  }
+};
+
+// Function to fetch maximum variety data (30 days)
+export const fetchMaximumVarietyData = async (): Promise<SportEvent[]> => {
+  return fetchDiverseSportsData('max');
+};
+
 // Function to fetch today's fixtures
 export const fetchTodaysFixtures = async (): Promise<SportEvent[]> => {
   return fetchAllFixturesByDay(getTodaysDate());
@@ -76,6 +100,7 @@ export const getSportIcon = (sport: string): string => {
     'Basketball': '🏀',
     'Baseball': '⚾',
     'American Football': '🏈',
+    'Australian Football': '🏈',
     'Motorsport': '🏎️',
     'Ice Hockey': '🏒',
     'Rugby': '🏉',
@@ -93,7 +118,22 @@ export const getSportIcon = (sport: string): string => {
     'NFL': '🏈',
     'NBA': '🏀',
     'MLB': '⚾',
-    'NHL': '🏒'
+    'NHL': '🏒',
+    'AFL': '🏈',
+    'NRL': '🏉',
+    'Super Rugby': '🏉',
+    'Big Bash': '🏏',
+    'A-League': '⚽',
+    'Premier League': '⚽',
+    'Championship': '⚽',
+    'FA Cup': '⚽',
+    'Carabao Cup': '⚽',
+    'NCAA': '🏈',
+    'College Football': '🏈',
+    'College Basketball': '🏀',
+    'CFL': '🏈',
+    'MLS': '⚽',
+    'Canadian Football': '🏈'
   };
   
   return sportIcons[sport] || '🏆';

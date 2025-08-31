@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAllFixturesByDay, fetchUpcomingFixtures, groupEventsBySport, getSportIcon } from '../services/apiService';
+import { fetchDiverseSportsData, groupEventsBySport, getSportIcon } from '../services/apiService';
 import type { SportEvent, GroupedEvents } from '../types/sports';
 import { Calendar, Filter, Globe, Clock, Search, ChevronDown, ChevronRight, MapPin } from 'lucide-react';
 
@@ -29,10 +29,7 @@ const Home: React.FC = () => {
     ...allEvents.map(event => event.strAwayTeam)
   ].filter(Boolean))].sort();
 
-  // Get today's date
-  const getTodaysDate = (): string => {
-    return new Date().toISOString().slice(0, 10);
-  };
+
 
   // Detect user region on component mount
   useEffect(() => {
@@ -49,6 +46,24 @@ const Home: React.FC = () => {
     detectRegion();
   }, []);
 
+  // Auto-expand regional sports sections
+  useEffect(() => {
+    if (userRegion && Object.keys(filteredEvents).length > 0) {
+      const newExpanded = new Set(expandedSections);
+      
+      // Auto-expand regional sports
+      Object.entries(filteredEvents).forEach(([sport, events]) => {
+        const isRegional = getRegionalPriority(sport, events) === 1;
+        if (isRegional) {
+          newExpanded.add(`live-${sport}`);
+          newExpanded.add(`upcoming-${sport}`);
+        }
+      });
+      
+      setExpandedSections(newExpanded);
+    }
+  }, [userRegion, filteredEvents]);
+
   // Load data
   useEffect(() => {
     const loadData = async () => {
@@ -56,17 +71,9 @@ const Home: React.FC = () => {
         setIsLoading(true);
         setError(null);
         
-        const today = getTodaysDate();
-        const todaysEvents = await fetchAllFixturesByDay(today);
-        const upcomingEvents = await fetchUpcomingFixtures(7);
-        
-        // Combine and deduplicate events
-        const allEventsData = [...todaysEvents, ...upcomingEvents];
-        const uniqueEvents = allEventsData.filter((event, index, self) => 
-          index === self.findIndex(e => e.idEvent === event.idEvent)
-        );
-        
-        setAllEvents(uniqueEvents);
+        // Fetch diverse sports data for better variety
+        const allEventsData = await fetchDiverseSportsData();
+        setAllEvents(allEventsData);
       } catch (err) {
         setError('Failed to load fixtures. Please try again later.');
         console.error(err);
@@ -176,13 +183,23 @@ const Home: React.FC = () => {
     }, {} as Record<string, SportEvent[]>);
   };
 
+  // Normalize sport names for display
+  const normalizeSportName = (sport: string): string => {
+    const sportMappings: Record<string, string> = {
+      'Australian Football': 'AFL',
+      'American Football': 'Football',
+      'Soccer': 'Football',
+    };
+    return sportMappings[sport] || sport;
+  };
+
   // Get regional priority for sports
   const getRegionalPriority = (_sport: string, events: SportEvent[]): number => {
     const regionalKeywords = {
-      'AU': ['australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league'],
-      'US': ['nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college'],
-      'GB': ['premier league', 'championship', 'fa cup', 'carabao cup'],
-      'CA': ['nhl', 'cfl', 'mls', 'canadian'],
+      'AU': ['australian', 'afl', 'nrl', 'super rugby', 'big bash', 'a-league', 'australian football'],
+      'US': ['nfl', 'nba', 'mlb', 'nhl', 'ncaa', 'college', 'american football'],
+      'GB': ['premier league', 'championship', 'fa cup', 'carabao cup', 'soccer'],
+      'CA': ['nhl', 'cfl', 'mls', 'canadian', 'canadian football'],
     };
 
     const userRegionKeywords = regionalKeywords[userRegion as keyof typeof regionalKeywords] || [];
@@ -473,14 +490,14 @@ const Home: React.FC = () => {
                       onClick={() => toggleSection(sectionId)}
                       className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{getSportIcon(sport)}</span>
-                        <div className="text-left">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{sport}</h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {totalEvents} live event{totalEvents !== 1 ? 's' : ''}
-                          </p>
-                        </div>
+                                             <div className="flex items-center space-x-3">
+                         <span className="text-2xl">{getSportIcon(sport)}</span>
+                         <div className="text-left">
+                           <h3 className="font-semibold text-gray-900 dark:text-white">{normalizeSportName(sport)}</h3>
+                           <p className="text-sm text-gray-500 dark:text-gray-400">
+                             {totalEvents} live event{totalEvents !== 1 ? 's' : ''}
+                           </p>
+                         </div>
                         {isRegional && (
                           <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                             Regional
@@ -575,14 +592,14 @@ const Home: React.FC = () => {
                       onClick={() => toggleSection(sectionId)}
                       className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{getSportIcon(sport)}</span>
-                        <div className="text-left">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{sport}</h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {totalEvents} upcoming event{totalEvents !== 1 ? 's' : ''}
-                          </p>
-                        </div>
+                                             <div className="flex items-center space-x-3">
+                         <span className="text-2xl">{getSportIcon(sport)}</span>
+                         <div className="text-left">
+                           <h3 className="font-semibold text-gray-900 dark:text-white">{normalizeSportName(sport)}</h3>
+                           <p className="text-sm text-gray-500 dark:text-gray-400">
+                             {totalEvents} upcoming event{totalEvents !== 1 ? 's' : ''}
+                           </p>
+                         </div>
                         {isRegional && (
                           <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                             Regional
